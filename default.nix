@@ -5,8 +5,8 @@ let
   make = pkgs.gnumake;
 in
 pkgs.mkShell {
-  name = "uff";
-  packages = [nvim nodejs];
+  name = "webworker-pdf";
+  packages = [nvim nodejs make pkgs.xdg-utils];
   shellHook = ''
     set -a
     source .env
