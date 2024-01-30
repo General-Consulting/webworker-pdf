@@ -1,5 +1,5 @@
 {
   "tasks": {
-    "dev": "deno run --allow-read=/ --allow-write=.  --watch --allow-run=xdg-open worker-poc.ts"
+    "dev": "deno run --allow-net --allow-read=/ --allow-write=.  --watch --allow-run=xdg-open worker-poc.ts"
   }
 }
