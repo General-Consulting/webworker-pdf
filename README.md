@@ -12,13 +12,15 @@ nix-shell default.nix
 
 ## Build
 
+See [the makefile](./makefile) for more information
 ```sh
-    [nix-shell]:~/path/to/repo]$ make pdf
+# run inside nix-shell   
+make pdf
 ```
 
 ## Develop
 
-See [[./deno.json]]
+See [deno.json](./deno.json) for more information
 
 ```sh 
 deno task dev
