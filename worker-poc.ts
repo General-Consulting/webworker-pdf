@@ -1,20 +1,11 @@
 const { Workio } = await import("https://workio.dev/@0.0.8/mod.js");
 
 const WorkerTemplate = new Workio((myName) => {
-  function fixedFieldName(name) {
+  function fixedFieldName(name: string, patternTemplate: string = "${match[1]}_${match[3]}.${match[2]}"): string {
     const pattern = /^(.+)\.([^.]+)_(\d+)$/;
     const match = name.match(pattern);
     if (match) {
-      return `${match[1]}_${match[3]}.${match[2]}`;
-    }
-    return name;
-  }
-
-  function fixedFieldName(name) {
-    const pattern = /^(.+)\.([^.]+)_(\d+)$/;
-    const match = name.match(pattern);
-    if (match) {
-      return `${match[1]}_${match[3]}.${match[2]}`;
+      return new Function('match', `return \`${patternTemplate}\`;`)(match);
     }
     return name;
   }
@@ -66,13 +57,12 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
       newField.select(oldField.getSelected());
       break;
     default:
-      console.log(`Unsupported field type: ${fieldType}`);
       return;
   }
 
 }
 
-async function listFillableFields(pdfBuffer) {
+async function devHelperAugment(pdfBuffer, renamePattern, suffix) {
   const { PDFDocument } = await import('https://cdn.skypack.dev/pdf-lib@^1.17.1?dts');
   const { open } = await import('https://deno.land/x/open/index.ts');
 
@@ -83,7 +73,7 @@ async function listFillableFields(pdfBuffer) {
   // Collect field information for renaming
   const fieldInfo = fields.map(field => ({
     oldField: field,
-    newName: fixedFieldName(field.getName())
+    newName: fixedFieldName(field.getName(), renamePattern)
   }));
 
   // Rename and recreate fields
@@ -99,7 +89,7 @@ async function listFillableFields(pdfBuffer) {
   fields2.forEach((field) => {
 
     const name = field.getName();
-    const fixed = fixedFieldName(name);
+    const fixed = fixedFieldName(name, renamePattern);
 
     if (field.constructor.name.includes("PDFTextField")) {
       const newMax = max(fixed.length, field.getMaxLength() || 0)
@@ -109,28 +99,40 @@ async function listFillableFields(pdfBuffer) {
     } else if (field.constructor.name.includes("PDFCheckBox")) {
     } else if (field.constructor.name === "PDFDropdown") {
     } else {
-    console.log("error processing", name, field.constructor.name, "is not supported")
     }
 
 
   });
 
   const pdfBytes = await pdfDoc.save();
-  const fileName = 'reedited.pdf'
+  const fileName = `convention-${suffix}.pdf`
   const file = await Deno.create(fileName);
   const written = await file.write(pdfBytes);
-  open(fileName);
   console.log(`${written} bytes written to ${fileName}`);
+  const cmd = new Deno.Command('xdg-open', {
+      args: [
+        fileName
+      ]
+    });
+  const { code, stdout, stderr } = await cmd.output();
 }
 
-  return { listFillableFields, close }; // expose methods as return value
+  return { devHelperAugment, close }; // expose methods as return value
 });
 
-const workerInstance = new WorkerTemplate("Workio"); // create web worker
+const patterns = {
+  hyphen: "${match[1]}_${match[3]}.${match[2]}",
+  dot: "${match[1]}.${match[3]}.${match[2]}",
+  bracket: "${match[1]}[${match[3]}].${match[2]}",
+};
 
-const data = await Deno.readFile("./marked_up.pdf");
-await workerInstance.listFillableFields(data.buffer);
+for (const [key, pattern] of Object.entries(patterns)) {
+  const workerInstance = new WorkerTemplate("Workio"); // create web worker
 
-await workerInstance.close();
+  const data = await Deno.readFile("./marked_up.pdf");
+  await workerInstance.devHelperAugment(data.buffer, pattern, key);
+  await workerInstance.close(); // Consider moving this outside the loop if you need the worker instance later
+}
+
 
 export {};
