@@ -1,4 +1,4 @@
-import {Workio}from "workio";
+import {Workio}from "https://workio.dev/@0.0.8/mod.js";
 
 const WorkerTemplate = new Workio((myName) => {
   function fixedFieldName(name: string, patternTemplate: string = "${match[1]}_${match[3]}.${match[2]}"): string {
@@ -63,7 +63,7 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
 }
 
 async function devHelperAugment(pdfBuffer, renamePattern, suffix) {
-  const { PDFDocument } = await import('pdf-lib');
+  const { PDFDocument } = await import('https://cdn.skypack.dev/pdf-lib@^1.17.1?dts');
   const pdfDoc = await PDFDocument.load(pdfBuffer);
   const form = pdfDoc.getForm();
   const fields = form.getFields();

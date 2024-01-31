@@ -1,46 +1,36 @@
 {
-  description = "A flake for the webworker-pdf project";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.nix-deno.url = "github:nekowinston/nix-deno";  # Update with the correct path to nix-deno
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/90f456026d284c22b3e3497be980b2e47d0b28ac";
-    flake-utils.url = "github:numtide/flake-utils";
-    devshell.url = "github:numtide/devshell";
-    deno2nix.url = "github:SnO2WMaN/deno2nix";  # Add deno2nix as an input
-  };
-
-  outputs = { self, nixpkgs, flake-utils, deno2nix, ... } @ inputs :
-    let
-      systems = flake-utils.lib.defaultSystems;
-    in
-    flake-utils.lib.eachSystem systems (system:
-      let
-      inherit (pkgs) deno2nix;
+  outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
+    flake-utils.lib.eachDefaultSystem (system: let
+      buildPhase = ''
+        mkdir -p $out
+        deno task build
+        '';
       pkgs = import nixpkgs {
         inherit system;
-        overlays = with inputs; [
-          devshell.overlays.default
-        ];
+        overlays = [ inputs.nix-deno.overlays.default ];
       };
-      in
-      {
-        packages.default = deno2nix.mkExecutable {
-          pname = "webworker-pdf";
-          version = "1.0.0";
-          src = ./.;
-          denoLock = ./deno.lock;
-          entrypoint = "./main.ts";  # specify your entrypoint file
-          config = "./deno.json";       # specify your config file
-          allow = {
-            net = true;
-            read = true;
-            run = "xdg-open";
-          };
-        };
+    in {
 
-        devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [ deno neovim gnumake xdg-utils ];
-        };
-      }
-    );
+      packages.executable = pkgs.denoPlatform.mkDenoDerivation {
+        name = "example-executable";
+        version = "0.1.2";
+
+        src = ./.;
+        buildInputs = [ pkgs.xdg-utils ];
+
+        inherit buildPhase;
+
+        installPhase = ''
+          mkdir -p $out
+          cp *.pdf $out
+          echo PDFS generated and copied to $out
+        '';
+      };
+
+      defaultPackage = self.packages.${system}.executable;
+    });
 }
-
