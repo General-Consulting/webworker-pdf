@@ -18,13 +18,12 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = with inputs; [
-          devshell.overlay
-          deno2nix.overlays.default
+          devshell.overlays.default
         ];
       };
       in
       {
-        packages.executable = deno2nix.mkExecutable {
+        packages.default = deno2nix.mkExecutable {
           pname = "webworker-pdf";
           version = "1.0.0";
           src = ./.;
