@@ -1,7 +1,7 @@
 {
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.nix-deno.url = "github:nekowinston/nix-deno";  # Update with the correct path to nix-deno
+  inputs.nix-deno.url = "github:nekowinston/nix-deno";
 
   outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
     flake-utils.lib.eachDefaultSystem (system: let
