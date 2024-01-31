@@ -4,33 +4,40 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/90f456026d284c22b3e3497be980b2e47d0b28ac";
     flake-utils.url = "github:numtide/flake-utils";
-    deno2nix.url = "github:webmaster128/deno2nix";  # Add deno2nix as an input
+    devshell.url = "github:numtide/devshell";
+    deno2nix.url = "github:SnO2WMaN/deno2nix";  # Add deno2nix as an input
   };
 
-  outputs = { self, nixpkgs, flake-utils, deno2nix, ... }:
+  outputs = { self, nixpkgs, flake-utils, deno2nix, ... } @ inputs :
     let
       systems = flake-utils.lib.defaultSystems;
     in
     flake-utils.lib.eachSystem systems (system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-        };
-
-        # Use deno2nix to build your Deno application
-        denoApp = deno2nix.lib.buildDenoPackage {
-          pname = "webworker-pdf";
-          version = "1.0.0";  # Replace with your app's version
-          src = ./.;
-          denoLock = ./deno.lock;  # Path to your deno.lock file
-          # Add any additional build inputs or environment variables if needed
-        };
+      inherit (pkgs) deno2nix;
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = with inputs; [
+          devshell.overlay
+          deno2nix.overlays.default
+        ];
+      };
       in
       {
-        packages = {
-          webworker-pdf = denoApp;
+        packages.executable = deno2nix.mkExecutable {
+          pname = "webworker-pdf";
+          version = "1.0.0";
+          src = ./.;
+          denoLock = ./deno.lock;
+          entrypoint = "./main.ts";  # specify your entrypoint file
+          config = "./deno.json";       # specify your config file
+          allow = {
+            net = true;
+            read = true;
+            run = "xdg-open";
+          };
         };
-        defaultPackage = packages.webworker-pdf;  # Set the default package
+
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [ deno neovim gnumake xdg-utils ];
         };
