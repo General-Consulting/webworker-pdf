@@ -6,22 +6,24 @@
 
 ## Setup
 
+No setup is required, but you can drop into a dev shell with
+
 ```sh
-nix-shell default.nix
+nix develop
 ```
 
 ## Build
 
-See [the makefile](./makefile) for more information
 ```sh
-# run inside nix-shell   
-make pdf
+nix build
 ```
 
 ## Develop
 
-See [deno.json](./deno.json) for more information
+To setup a watcher to rebuild upon save:
 
 ```sh 
 deno task dev
 ```
+
+See [deno.json](./deno.json) for more information
