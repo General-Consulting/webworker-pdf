@@ -6,7 +6,6 @@
   outputs = { self, nixpkgs, flake-utils, ... } @ inputs:
     flake-utils.lib.eachDefaultSystem (system: let
       buildPhase = ''
-        mkdir -p $out
         deno task build
         '';
       pkgs = import nixpkgs {
@@ -24,11 +23,7 @@
 
         inherit buildPhase;
 
-        installPhase = ''
-          mkdir -p $out
-          cp *.pdf $out
-          echo PDFS generated and copied to $out
-        '';
+        installPhase = "";
       };
 
       defaultPackage = self.packages.${system}.executable;
