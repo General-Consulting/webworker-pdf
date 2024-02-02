@@ -6,7 +6,10 @@
     "https://cdn.skypack.dev/-/pako@v1.0.11-HN3j6r6YXxSYMQQ5YY76/dist=es2019,mode=imports/optimized/pako.js": "cb928ba393bdb8c8b9b6509a68975a00e43780ed2424bf0c6e020890dc546e4b",
     "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=imports/optimized/pdf-lib.js": "ce55a997148b41a520719255d57af560fd269685241031d2502f0c7583d690b2",
     "https://cdn.skypack.dev/-/tslib@v1.14.1-mWTe8wftGbG1xYC8gPyw/dist=es2019,mode=imports/optimized/tslib.js": "bde9e42ab1dee8764c8fef53a8165ab516af507bd5a6e120aae6d0922925ba74",
+    "https://cdn.skypack.dev/pdf-lib?dts": "11ccb0b2660b159faec9facfc77e47ad78e1d1ee41805f007b4dd11b62095e05",
     "https://cdn.skypack.dev/pdf-lib@^1.17.1?dts": "11ccb0b2660b159faec9facfc77e47ad78e1d1ee41805f007b4dd11b62095e05",
+    "https://raw.githubusercontent.com/General-Consulting/pdf-lib/master/src/index.ts": "6177e65e80f2c6b4e2c5c5b91728f874234c8a8ce30f0dee910566875a8ead79",
+    "https://raw.githubusercontent.com/General-Consulting/pdf-lib/v1.20.3/dist/pdf-lib.esm.js": "9064850f9c2c7b977a79fc2359638fa9bfdbf10e201d1c55ce0874cd359e6896",
     "https://workio.dev/@0.0.8/mod.js": "cce9242d6c0639692e1f1cab3241e7c633f618bd4d3bc2d93aaa0641a647ab55"
   }
 }

@@ -62,60 +62,63 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
 
 }
 
-async function devHelperAugment(pdfBuffer, renamePattern, suffix) {
-  const { PDFDocument } = await import('https://cdn.skypack.dev/pdf-lib@^1.17.1?dts');
-  const pdfDoc = await PDFDocument.load(pdfBuffer);
-  const form = pdfDoc.getForm();
-  const fields = form.getFields();
+  async function devHelperAugment(pdfBuffer, renamePattern) {
+    const { PDFDocument } = await import('https://raw.githubusercontent.com/General-Consulting/pdf-lib/v1.20.3/dist/pdf-lib.esm.js');
+    const pdfDoc = await PDFDocument.load(pdfBuffer);
+    const form = pdfDoc.getForm();
+    const fields = form.getFields();
 
-  // Collect field information for renaming
-  const fieldInfo = fields.map(field => ({
-    oldField: field,
-    newName: fixedFieldName(field.getName(), renamePattern)
-  }));
-
-  // Rename and recreate fields
-  for (const { oldField, newName } of fieldInfo) {
-    if (oldField.getName() !== newName) {
-      await renameAndRecreateField(pdfDoc, form, oldField, newName);
+    for (const field of fields) {
+      const newName = fixedFieldName(field.getName(), renamePattern);
+      if (field.getName() !== newName) {
+        await renameAndRecreateField(pdfDoc, form, field, newName);
+      }
     }
+
+    return pdfDoc.save();
   }
 
+  async function generatePdfSchema(pdfBuffer) {
+    const { PDFDocument } = await import('https://raw.githubusercontent.com/General-Consulting/pdf-lib/v1.20.3/dist/pdf-lib.esm.js');
+    const pdfDoc = await PDFDocument.load(pdfBuffer);
+    const form = pdfDoc.getForm();
+    const fields = form.getFields();
 
-  // Set field values to their field name
-  const fields2 = form.getFields();
-  fields2.forEach((field) => {
+    // Initialize the schema object
+    let schema = {};
 
-    const name = field.getName();
-    const fixed = fixedFieldName(name, renamePattern);
+    // Function to add field and its properties to the schema
+    function addFieldToSchema(path, field) {
+      const parts = path.split(/[\.\[\]]/).filter(p => p !== ''); // Split and filter empty strings
+      let current = schema;
+      if(parts.length == 1) return;
 
-    if (field.constructor.name.includes("PDFTextField")) {
-      const newMax = max(fixed.length, field.getMaxLength() || 0)
-      field.setMaxLength(newMax);
-      field.setText(fixed)
-    } else if (field.constructor.name.includes("PDFRadioGroup")) {
-    } else if (field.constructor.name.includes("PDFCheckBox")) {
-    } else if (field.constructor.name === "PDFDropdown") {
-    } else {
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        const isLastPart = i === parts.length - 1;
+
+        if (isLastPart) {
+          // Add field properties here
+          current[part] = { type: field.constructor.name, maxLength: field.getMaxLength ? field.getMaxLength() : null };
+        } else {
+          if (!current[part]) {
+            current[part] = parts[i + 1].match(/^\d+$/) ? [] : {}; // Next part is index => create array, else object
+          }
+          current = current[part];
+        }
+      }
     }
 
-
-  });
-
-  const pdfBytes = await pdfDoc.save();
-  const fileName = `convention-${suffix}.pdf`
-  const file = await Deno.create(fileName);
-  const written = await file.write(pdfBytes);
-  console.log(`${written} bytes written to ${fileName}`);
-  const cmd = new Deno.Command('xdg-open', {
-      args: [
-        fileName
-      ]
+    // Iterate over fields and construct schema
+    fields.forEach(field => {
+      const name = fixedFieldName(field.getName()); // Use your fixedFieldName function
+      addFieldToSchema(name, field);
     });
-  const { code, stdout, stderr } = await cmd.output();
-}
 
-  return { devHelperAugment, close }; // expose methods as return value
+    return schema;
+  }
+
+  return { devHelperAugment, generatePdfSchema, close }; // expose methods as return value
 });
 
 const patterns = {
@@ -126,11 +129,24 @@ const patterns = {
 
 for (const [key, pattern] of Object.entries(patterns)) {
   const workerInstance = new WorkerTemplate("Workio"); // create web worker
-
   const data = await Deno.readFile("./marked_up.pdf");
-  await workerInstance.devHelperAugment(data.buffer, pattern, key);
-  await workerInstance.close(); // Consider moving this outside the loop if you need the worker instance later
+
+  const pdfBytes = await workerInstance.devHelperAugment(data.buffer, pattern);
+  
+  // Writing the modified PDF
+  const pdfFileName = `convention-${key}.pdf`;
+  await Deno.writeFile(pdfFileName, pdfBytes);
+  console.log(`Modified PDF written to ${pdfFileName}`);
+
+  // Generate schema and write it to a file
+  const schema = await workerInstance.generatePdfSchema(pdfBytes); // Pass modified PDF bytes here
+  const schemaFileName = `convention-${key}-schema.json`;
+  await Deno.writeFile(schemaFileName, new TextEncoder().encode(JSON.stringify(schema, null, 2)));
+  console.log(`Schema written to ${schemaFileName}`);
+
+  await workerInstance.close(); // Close the worker instance
 }
+
 
 
 export {};
