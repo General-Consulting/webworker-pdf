@@ -71,8 +71,17 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
     for (const field of fields) {
       const newName = fixedFieldName(field.getName(), renamePattern);
       if (field.getName() !== newName) {
-        await renameAndRecreateField(pdfDoc, form, field, newName);
+        field.acroField.setPartialName(newName);
       }
+      const fieldType = field.constructor.name;
+      switch (fieldType) {
+    case 'PDFTextField':
+    case 'PDFTextField2':
+      const newMax = max(newName.length, field.getMaxLength() || 0)
+      field.setMaxLength(newMax);
+      field.setText(newName);
+      break;
+  }
     }
 
     return pdfDoc.save();
