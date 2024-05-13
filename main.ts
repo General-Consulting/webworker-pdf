@@ -1,6 +1,6 @@
 import {Workio}from "https://workio.dev/@0.0.8/mod.js";
 
-const WorkerTemplate = new Workio((myName) => {
+const WorkerTemplate = new Workio(() => {
   function fixedFieldName(name: string, patternTemplate: string = "${match[1]}_${match[3]}.${match[2]}"): string {
     const pattern = /^(.+)\.([^.]+)_(\d+)$/;
     const match = name.match(pattern);
@@ -10,7 +10,7 @@ const WorkerTemplate = new Workio((myName) => {
     return name;
   }
 
-function max(a,b) {
+function max(a: number,b: number) {
   if(a && b && a > b) return a;
   else if(a && b && a <= b) return b;
   else if(a) return a;
@@ -18,10 +18,10 @@ function max(a,b) {
   else throw "wtf are a and b"
 }
 
-async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
+async function renameAndRecreateField(pdfDoc: any, form: { createTextField: (arg0: any) => any; createCheckBox: (arg0: any) => any; createRadioGroup: (arg0: any) => any; createDropdown: (arg0: any) => any; createSignature: (arg0: any) => any; createOptionList: (arg0: any) => any; }, oldField: { constructor: { name: any; }; getMaxLength: () => any; isMultiline: () => any; isChecked: () => any; getOptions: () => any; getSelected: () => any; }, newName: string | any[]) {
   const fieldType = oldField.constructor.name;
 
-  let newField;
+  let newField: { setMaxLength: (arg0: any) => void; setText: (arg0: any) => void; enableMultiline: () => any; check: (arg0: any) => void; setOptions: (arg0: any) => void; select: (arg0: any) => void; };
   switch (fieldType) {
     case 'PDFTextField':
     case 'PDFTextField2':
@@ -62,7 +62,7 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
 
 }
 
-  async function devHelperAugment(pdfBuffer, renamePattern) {
+  async function devHelperAugment(pdfBuffer: any, renamePattern: string | undefined) {
     const { PDFDocument } = await import('https://raw.githubusercontent.com/General-Consulting/pdf-lib/v1.20.3/dist/pdf-lib.esm.js');
     const pdfDoc = await PDFDocument.load(pdfBuffer);
     const form = pdfDoc.getForm();
@@ -87,7 +87,7 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
     return pdfDoc.save();
   }
 
-  async function generatePdfSchema(pdfBuffer) {
+  async function generatePdfSchema(pdfBuffer: any) {
     const { PDFDocument } = await import('https://raw.githubusercontent.com/General-Consulting/pdf-lib/v1.20.3/dist/pdf-lib.esm.js');
     const pdfDoc = await PDFDocument.load(pdfBuffer);
     const form = pdfDoc.getForm();
@@ -97,8 +97,8 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
     let schema = {};
 
     // Function to add field and its properties to the schema
-    function addFieldToSchema(path, field) {
-      const parts = path.split(/[\.\[\]]/).filter(p => p !== ''); // Split and filter empty strings
+    function addFieldToSchema(path: string, field: { constructor: { name: any; }; getMaxLength: () => any; }) {
+      const parts = path.split(/[\.\[\]]/).filter((p: string) => p !== ''); // Split and filter empty strings
       let current = schema;
       if(parts.length == 1) return;
 
@@ -119,7 +119,7 @@ async function renameAndRecreateField(pdfDoc, form, oldField, newName) {
     }
 
     // Iterate over fields and construct schema
-    fields.forEach(field => {
+    fields.forEach((field: { getName: () => string; }) => {
       const name = fixedFieldName(field.getName()); // Use your fixedFieldName function
       addFieldToSchema(name, field);
     });
