@@ -1,6 +1,15 @@
 {
   "version": "3",
   "redirects": {
+    "https://cdn.skypack.dev/-/@pdf-lib/standard-fonts@v1.0.0-Z8Dxw2SAoP39vRoTIKF1/dist=es2019,mode=types/index.d.ts": "https://cdn.skypack.dev/-/@pdf-lib/standard-fonts@v1.0.0-Z8Dxw2SAoP39vRoTIKF1/dist=es2019,mode=types/lib/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/api/form.d.ts": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/api/form/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/api/image.d.ts": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/api/image/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/api/text.d.ts": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/api/text/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/core.d.ts": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/core/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/core/acroform.d.ts": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/core/acroform/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/core/annotation.d.ts": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/core/annotation/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/index.js": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/index.d.ts",
+    "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/utils.d.ts": "https://cdn.skypack.dev/-/pdf-lib@v1.17.1-P8YmSI9gov9vMnrV7v2f/dist=es2019,mode=types/cjs/utils/index.d.ts",
     "https://deno.land/x/is_docker/mod.ts": "https://deno.land/x/is_docker@v2.0.0/mod.ts",
     "https://deno.land/x/open/index.ts": "https://deno.land/x/open@v0.0.6/index.ts"
   },

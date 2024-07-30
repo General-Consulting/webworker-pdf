@@ -31,6 +31,52 @@
       ];
 
       perSystem = { pkgs, system, self', inputs', lib, ... }:
+        let
+          ide = with pkgs; (vscode-with-extensions.override {
+            vscode = vscode;
+            vscodeExtensions = with vscode-extensions; [
+              jnoortheen.nix-ide
+              vscodevim.vim
+              yzhang.markdown-all-in-one
+              eamodio.gitlens
+              editorconfig.editorconfig
+              denoland.vscode-deno
+            ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+
+
+              {
+                name = "autoclosetabs";
+                publisher = "Zwyx";
+                version = "1.1.2";
+                sha256 = "sha256-yZUAyBnGYFZQ7VXYsTfzF2rl6rAQ+DeZVC2FNMzw/uc=";
+              }
+              {
+                name = "deepdark-material";
+                publisher = "Nimda";
+                version = "3.3.1";
+                sha256 = "sha256-gc7B3h+r4UXO0WSVsscOa5nY4RRxG5XX3zrC1E1WJ3k=";
+              }
+              {
+                name = "copilot";
+                publisher = "Github";
+                version = "1.165.0";
+                sha256 = "sha256-8HvWb5zaoUdZ+BsAnW2TM20LqGwZshxgeJDEYKZOFgg=";
+              }
+              {
+                name = "back-n-forth";
+                publisher = "nick-rudenko";
+                version = "3.1.1";
+                sha256 = "sha256-yircrP2CjlTWd0thVYoOip/KPve24Ivr9f6HbJN0Haw=";
+              }
+              {
+                name = "smart-tabs";
+                publisher = "Valsorym";
+                version = "1.3.2";
+                sha256 = "sha256-RRL9DHQnZT64wIBvKC+f+6ga4kRptH98zpljfHc+Cu4=";
+              }
+            ];
+          });
+        in
         {
 
           _module.args.pkgs = import nixpkgs {
@@ -66,54 +112,17 @@
             name = "General consulting web worker";
             packages = with pkgs; [
               deno
-              (vscode-with-extensions.override {
-                vscode = vscode;
-                vscodeExtensions = with vscode-extensions; [
-                  jnoortheen.nix-ide
-                  vscodevim.vim
-                  yzhang.markdown-all-in-one
-                  eamodio.gitlens
-                  editorconfig.editorconfig
-                  denoland.vscode-deno
-                ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+              ide
+            ];
 
-
-                  {
-                    name = "autoclosetabs";
-                    publisher = "Zwyx";
-                    version = "1.1.2";
-                    sha256 = "sha256-yZUAyBnGYFZQ7VXYsTfzF2rl6rAQ+DeZVC2FNMzw/uc=";
-                  }
-                  {
-                    name = "deepdark-material";
-                    publisher = "Nimda";
-                    version = "3.3.1";
-                    sha256 = "sha256-gc7B3h+r4UXO0WSVsscOa5nY4RRxG5XX3zrC1E1WJ3k=";
-                  }
-                  {
-                    name = "copilot";
-                    publisher = "Github";
-                    version = "1.165.0";
-                    sha256 = "sha256-8HvWb5zaoUdZ+BsAnW2TM20LqGwZshxgeJDEYKZOFgg=";
-                  }
-                  {
-                    name = "back-n-forth";
-                    publisher = "nick-rudenko";
-                    version = "3.1.1";
-                    sha256 = "sha256-yircrP2CjlTWd0thVYoOip/KPve24Ivr9f6HbJN0Haw=";
-                  }
-                  {
-                    name = "smart-tabs";
-                    publisher = "Valsorym";
-                    version = "1.3.2";
-                    sha256 = "sha256-RRL9DHQnZT64wIBvKC+f+6ga4kRptH98zpljfHc+Cu4=";
-                  }
-                ];
-              })
+            commands = [
+              {
+                name = "hack";
+                help = "run VScode configured for this project";
+                command = "${ide}/bin/code $PRJ_ROOT";
+              }
             ];
           };
         };
-
-
     };
 }
