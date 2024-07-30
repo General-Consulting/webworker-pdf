@@ -2,8 +2,6 @@
   description = "A flake for generating pdfs";
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    dream2nix.url = "github:nix-community/dream2nix";
-    corepack.url = "github:SnO2WMaN/corepack-flake";
 
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -39,7 +37,6 @@
             inherit system;
             config.allowUnfree = true;
             overlays = with inputs; [
-              corepack.overlays.default
               inputs.nix-deno.overlays.default
             ];
           };
