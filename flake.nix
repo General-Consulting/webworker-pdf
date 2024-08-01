@@ -89,11 +89,27 @@
             ];
           };
           packages = {
-            default = pkgs.denoPlatform.mkDenoDerivation {
-              name = "pdfGen";
+            default = pkgs.denoPlatform.mkDenoBinary {
+              name = "pdfForm2schema";
               version = "0.1.2";
+
               src = ./.;
+              buildInputs = [];
+
             };
+            cli = pkgs.denoPlatform.mkDenoDerivation {
+              name = "pdfGen-cli";
+              version = "0.1.2";
+
+              src = ./.;
+              buildInputs = [ pkgs.xdg-utils ];
+
+              buildPhase = ''
+                mkdir -p $out
+                deno task build-cli
+              '';
+            };
+
             ide = ide;
           };
 

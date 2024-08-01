@@ -1,7 +1,3 @@
 {
-  "tasks": {
-    "dev": "deno run --allow-net --allow-read=/ --allow-write=.  --allow-env --watch --allow-run=xdg-open cli.ts",
-    "run": "deno run --allow-run --allow-net --allow-read=/ --allow-write=. --allow-env cli.ts",
-    "build": "deno run --allow-run --allow-net --allow-read=/ --allow-write=. --allow-env cli.ts"
-  }
+
 }
