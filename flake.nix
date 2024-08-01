@@ -28,21 +28,23 @@
       systems = nixpkgs.lib.systems.flakeExposed;
       imports = [
         inputs.devshell.flakeModule
+        inputs.flake-root.flakeModule
       ];
 
       perSystem = { pkgs, system, self', inputs', lib, ... }:
         let
           ide = with pkgs; (vscode-with-extensions.override {
-            vscode = vscode;
             vscodeExtensions = with vscode-extensions; [
               jnoortheen.nix-ide
               vscodevim.vim
-              yzhang.markdown-all-in-one
-              eamodio.gitlens
-              editorconfig.editorconfig
-              denoland.vscode-deno
             ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
 
+              {
+                name = "vscode-deno";
+                publisher = "denoland";
+                version = "3.38.0";
+                sha256 = "sha256-wmcMkX1gmFhE6JukvOI3fez05dP7ZFAZz1OxmV8uu4k=";
+              }
 
               {
                 name = "autoclosetabs";
@@ -106,6 +108,20 @@
                 ''
               ];
             };
+            cli = pkgs.denoPlatform.mkDenoDerivation {
+              name = "pdfGen-cli";
+              version = "0.1.2";
+
+              src = ./.;
+              buildInputs = [ pkgs.xdg-utils ];
+
+              buildPhase = ''
+                mkdir -p $out
+                deno task build-cli
+              '';
+            };
+
+            ide = ide;
           };
 
           devshells.default = {
@@ -121,6 +137,7 @@
                 help = "run VScode configured for this project";
                 command = "${ide}/bin/code $PRJ_ROOT";
               }
+
             ];
           };
         };
