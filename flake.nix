@@ -98,15 +98,8 @@
 
 
               buildPhase = ''
-                mkdir -p $out
-                deno task build
+                deno task run
               '';
-
-              installPhase = [
-                ''
-                  cp ./*.pdf $out
-                ''
-              ];
             };
             cli = pkgs.denoPlatform.mkDenoDerivation {
               name = "pdfGen-cli";
